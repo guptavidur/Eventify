@@ -2,6 +2,7 @@ import prisma from '@/lib/prisma'
 import { Plus, Search, Filter, Edit, Trash2, ExternalLink } from 'lucide-react'
 import Link from 'next/link'
 import { format } from 'date-fns'
+import DeleteEventButton from '@/components/admin/DeleteEventButton'
 
 export default async function AdminEventsPage() {
   const events = await prisma.event.findMany({
@@ -96,17 +97,19 @@ export default async function AdminEventsPage() {
                     </div>
                   </td>
                   <td className="px-6 py-6">
-                    <p className="font-bold text-primary">{event.price === 0 ? 'FREE' : `$${event.price}`}</p>
+                    <p className="font-bold text-primary">{event.price === 0 ? 'FREE' : `₹${event.price}`}</p>
                   </td>
                   <td className="px-8 py-6 text-right">
                     <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button className="p-2 hover:bg-white/10 rounded-lg transition-colors text-zinc-400 hover:text-white">
+                      <Link 
+                        href={`/admin/events/${event.id}/edit`}
+                        className="p-2 hover:bg-white/10 rounded-lg transition-colors text-zinc-400 hover:text-white"
+                        title="Edit Event"
+                      >
                         <Edit className="w-4 h-4" />
-                      </button>
-                      <button className="p-2 hover:bg-red-500/10 rounded-lg transition-colors text-zinc-400 hover:text-red-400">
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                      <Link href={`/events/${event.id}`} target="_blank" className="p-2 hover:bg-white/10 rounded-lg transition-colors text-zinc-400 hover:text-secondary">
+                      </Link>
+                      <DeleteEventButton eventId={event.id} eventName={event.name} />
+                      <Link href={`/events/${event.id}`} target="_blank" className="p-2 hover:bg-white/10 rounded-lg transition-colors text-zinc-400 hover:text-secondary" title="View Public Page">
                         <ExternalLink className="w-4 h-4" />
                       </Link>
                     </div>

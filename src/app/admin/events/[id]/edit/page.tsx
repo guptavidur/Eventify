@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
+import { useRouter, useParams } from 'next/navigation'
 import { Calendar, MapPin, Tag, Users, Image as ImageIcon, ArrowLeft, Loader2, Save } from 'lucide-react'
 import Link from 'next/link'
 import axios from 'axios'
@@ -9,9 +9,11 @@ import { Category } from '@prisma/client'
 
 const categories = Object.values(Category)
 
-export default function NewEventPage() {
+export default function EditEventPage() {
   const router = useRouter()
+  const params = useParams()
   const [loading, setLoading] = useState(false)
+  const [fetching, setFetching] = useState(true)
   const [error, setError] = useState('')
 
   const [formData, setFormData] = useState({
@@ -28,6 +30,28 @@ export default function NewEventPage() {
   })
 
   const [tagInput, setTagInput] = useState('')
+
+  useEffect(() => {
+    const fetchEvent = async () => {
+      try {
+        const { data } = await axios.get(`/api/events/${params.id}`)
+        // Format dateTime for input field (YYYY-MM-DDThh:mm)
+        const date = new Date(data.dateTime)
+        const formattedDate = date.toISOString().slice(0, 16)
+        
+        setFormData({
+          ...data,
+          dateTime: formattedDate
+        })
+      } catch (err) {
+        setError('Failed to fetch event details')
+      } finally {
+        setFetching(false)
+      }
+    }
+
+    if (params.id) fetchEvent()
+  }, [params.id])
 
   const handleAddTag = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && tagInput.trim()) {
@@ -49,14 +73,23 @@ export default function NewEventPage() {
     setError('')
 
     try {
-      await axios.post('/api/events', formData)
+      await axios.patch(`/api/events/${params.id}`, formData)
       router.push('/admin/events')
       router.refresh()
     } catch (err: any) {
-      setError(err.response?.data || 'Failed to create event')
+      setError(err.response?.data || 'Failed to update event')
     } finally {
       setLoading(false)
     }
+  }
+
+  if (fetching) {
+    return (
+        <div className="h-[60vh] flex flex-col items-center justify-center gap-4 text-zinc-500">
+            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+            <p className="font-medium">Loading event details...</p>
+        </div>
+    )
   }
 
   return (
@@ -66,8 +99,8 @@ export default function NewEventPage() {
           <ArrowLeft className="w-5 h-5" />
         </Link>
         <div>
-          <h1 className="text-4xl font-black mb-1">Create Event</h1>
-          <p className="text-muted-foreground">Fill in the details to host a new experience.</p>
+          <h1 className="text-4xl font-black mb-1">Edit Event</h1>
+          <p className="text-muted-foreground">Update the details of your experience.</p>
         </div>
       </div>
 
@@ -179,7 +212,7 @@ export default function NewEventPage() {
                 min="0"
                 placeholder="49.99"
                 className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 focus:ring-2 focus:ring-primary outline-none transition-all"
-                value={formData.price || ''}
+                value={formData.price || 0}
                 onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) })}
               />
             </div>
@@ -198,7 +231,7 @@ export default function NewEventPage() {
               type="url"
               placeholder="https://images.unsplash.com/..."
               className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 focus:ring-2 focus:ring-primary outline-none transition-all"
-              value={formData.bannerImage}
+              value={formData.bannerImage || ''}
               onChange={(e) => setFormData({ ...formData, bannerImage: e.target.value })}
             />
           </div>
@@ -239,7 +272,7 @@ export default function NewEventPage() {
                 type="submit"
                 className="px-8 py-4 bg-primary text-white font-bold rounded-2xl flex items-center gap-2 hover:shadow-[0_0_20px_rgba(124,58,237,0.3)] transition-all disabled:opacity-50"
             >
-                {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <><Save className="w-5 h-5" /> Save Event</>}
+                {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <><Save className="w-5 h-5" /> Update Event</>}
             </button>
         </div>
       </form>

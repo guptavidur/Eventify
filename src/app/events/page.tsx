@@ -137,7 +137,7 @@ export default async function EventsPage({
                                         <div className="flex justify-between items-center pt-6 border-t border-white/5">
                                             <div>
                                                 <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">Entry Fee</p>
-                                                <p className="text-lg font-black text-primary">{event.price === 0 ? 'FREE' : `$${event.price}`}</p>
+                                                <p className="text-lg font-black text-primary">{event.price === 0 ? 'FREE' : `₹${event.price}`}</p>
                                             </div>
                                             <div className="text-right">
                                                 <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">Available</p>

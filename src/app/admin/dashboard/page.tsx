@@ -51,7 +51,7 @@ export default async function AdminDashboardPage() {
         <StatsCard 
           icon={<DollarSign className="w-6 h-6 text-green-400" />} 
           label="Net Revenue" 
-          value={`$${revenue.toLocaleString()}`} 
+          value={`₹${revenue.toLocaleString()}`} 
           change="+18% from last month"
         />
         <StatsCard 

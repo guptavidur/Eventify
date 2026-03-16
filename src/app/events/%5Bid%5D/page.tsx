@@ -85,7 +85,7 @@ export default async function EventDetailPage({ params }: { params: { id: string
                             <div className="flex justify-between items-start mb-8">
                                 <div>
                                     <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-1">Ticket Price</p>
-                                    <p className="text-4xl font-black text-primary">${event.price}</p>
+                                    <p className="text-4xl font-black text-primary">₹{event.price}</p>
                                 </div>
                                 <div className="text-right">
                                     <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-1">Available Seats</p>
